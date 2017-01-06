@@ -1,0 +1,117 @@
+package rsa;
+
+import java.math.BigInteger;
+import java.security.KeyFactory;
+import java.security.interfaces.RSAPrivateKey;
+import java.security.spec.RSAPrivateKeySpec;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.naming.BinaryRefAddr;
+
+public class RSA {
+	public static void main(String[] args) {
+
+		int flag = 0;
+		BigInteger nBigInteger = BigInteger.ZERO;
+		BigInteger _nBigInteger = BigInteger.ZERO;
+		BigInteger _pBigInteger = BigInteger.ZERO;
+		BigInteger _qBigInteger = BigInteger.ZERO;
+		BigInteger eBigInteger = new BigInteger("49999");
+		String p = "";
+		String q = "";
+		for (; flag != 1;) {
+			p = createBig();
+			q = createBig2();
+			_pBigInteger = new BigInteger(p);
+			_qBigInteger = new BigInteger(q);
+			_nBigInteger = (_pBigInteger.subtract(BigInteger.ONE)).multiply((_qBigInteger.subtract(BigInteger.ONE)));
+
+			if (isSu(p) && isSu(q) && _nBigInteger.mod(eBigInteger) != BigInteger.ZERO) {
+
+				flag = 1;
+			}
+		}
+
+		System.out.println(p);
+		System.out.println(q);
+
+		nBigInteger = _pBigInteger.multiply(_qBigInteger);
+		System.out.println(nBigInteger);
+
+		System.out.println(_nBigInteger);
+
+		System.out.println("_n _ n  " + _nBigInteger);
+		BigInteger dBigInteger = backWards(eBigInteger, _nBigInteger).mod(_nBigInteger);
+		BigInteger mBigInteger = new BigInteger("123456");
+		BigInteger cBigInteger = mBigInteger.modPow(eBigInteger, nBigInteger);
+		System.out.println("密文");
+		System.out.println(cBigInteger);
+		System.out.println("解密�");
+		System.out.println(cBigInteger.modPow(dBigInteger, nBigInteger));
+	}
+
+	public static String createBig() {
+		String result = "";
+		for (int i = 0; i < 10; i++) {
+			result = result + String.valueOf((int) (Math.random() * 10));
+		}
+		return result;
+	}
+
+	public static String createBig2() {
+		String result = "";
+		for (int i = 0; i < 10; i++) {
+			result = result + String.valueOf((int) (Math.random() * 10));
+		}
+		return result;
+	}
+
+	public static Boolean isSu(String num) {
+		BigInteger aBigInteger = new BigInteger(num);
+		for (int i = 2; i < 500000; i++) {
+			BigInteger bigInteger = new BigInteger(String.valueOf(i));
+			if (aBigInteger.mod(bigInteger).equals(BigInteger.ZERO)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static BigInteger backWards(BigInteger k1, BigInteger m) {
+		List<BigInteger> q = new ArrayList<BigInteger>();
+		BigInteger yuanshuju = m;
+		BigInteger c = k1;
+		BigInteger shang = BigInteger.ZERO;
+		BigInteger yushu = BigInteger.ZERO;
+		while (!yushu.equals(BigInteger.ONE)) {
+			System.out.println(c);
+			shang = yuanshuju.divide(c);
+			q.add(shang);
+			yushu = yuanshuju.subtract(shang.multiply(c));
+			yuanshuju = c;
+			c = yushu;
+		}
+		System.out.println(q.size() + "---------");
+		BigInteger bn_ = BigInteger.ZERO;
+		BigInteger bn = BigInteger.ONE;
+		BigInteger result = BigInteger.ZERO;
+		BigInteger FuZero = new BigInteger("-1");
+		System.out.println(q.size() + " =======");
+
+		for (int i = 0; i < q.size(); i++) {
+			System.out.println(q.get(i));
+		}
+
+		for (int i = 0; i < q.size(); i++) {
+
+			result = bn.multiply(FuZero).multiply(q.get(i));
+			result = result.add(bn_);
+			System.out.println(result);
+			bn_ = bn;
+			bn = result;
+		}
+		result = result.mod(m);
+		return result;
+	}
+}
